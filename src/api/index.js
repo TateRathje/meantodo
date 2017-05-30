@@ -6,6 +6,7 @@ var Todo = require('../models/todo');
 
 var router = express.Router();
 
+// Get all todos
 router.get('/todos', function(req, res) {
   Todo.find({}, function(err, todos) {
     if (err) {
@@ -13,6 +14,33 @@ router.get('/todos', function(req, res) {
     }
     res.json({ todos: todos });
   });
+});
+
+// Create new todo
+router.post('/todos', function(req, res) {
+	var todo = req.body;
+	Todo.create(todo, function(err, todo) {
+		if(err) {
+			return res.status(500).json({err: err.message});
+		}
+		res.json({'todo': todo, message: 'Todo Created'});
+	})  
+});
+
+// Edit an existing todo
+router.put('/todos/:id', function(req, res) {
+	debugger;
+	var id = req.params.id;
+	var todo = req.body;
+	if(todo && todo._id !== id) {
+		return res.status(500).json({err: "Ids don't match"});
+	}
+	Todo.findByIdAndUpdate(id, todo, {new: true}, function(err, todo) {
+		if(err) {
+			return res.status(500).json({err: err.message});
+		}
+		res.json({'todo': todo, message: 'Todo Updated'});
+	})  
 });
 
 module.exports = router;
