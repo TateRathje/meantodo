@@ -31,8 +31,7 @@ webpackJsonp([0],[
 
 	'use strict';
 
-
-	function DataService ($http) {
+	function DataService($http, $q) {
 	  this.getTodos = function(cb) {
 	    $http.get('/api/todos').then(cb);
 	  };
@@ -42,7 +41,22 @@ webpackJsonp([0],[
 	  };
 
 	  this.saveTodos = function(todos) {
-	    console.log("I saved " + todos.length + " todos!");
+	    var queue = [];
+	    todos.forEach(function(todo) {
+	      var request;
+	      if (!todo._id) {
+	        request = $http.post('/api/todos', todo)
+	      } else {
+	        request = $http.put('/api/todos/' + todo._id, todo).then(function(result) {
+	          todo = result.data.todo;
+	          return todo;
+	        });
+	      }
+	      queue.push(request);
+	    });
+	    return $q.all(queue).then(function(results) {
+	      console.log("I saved " + todos.length + " todos");
+	    });
 	  };
 
 	};
@@ -132,7 +146,14 @@ webpackJsonp([0],[
 	        return todo
 	      };
 	    })
-	    dataService.saveTodos(filteredTodos);
+	    dataService.saveTodos(filteredTodos)
+	    .finally($scope.resetTodoState());
+	  };
+
+	  $scope.resetTodoState = function() {
+	    $scope.todos.forEach(function(todo) {
+	      todo.edited = false;
+	    });
 	  };
 
 	}

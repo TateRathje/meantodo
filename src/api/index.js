@@ -24,12 +24,11 @@ router.post('/todos', function(req, res) {
 			return res.status(500).json({err: err.message});
 		}
 		res.json({'todo': todo, message: 'Todo Created'});
-	})  
+	});  
 });
 
 // Edit an existing todo
 router.put('/todos/:id', function(req, res) {
-	debugger;
 	var id = req.params.id;
 	var todo = req.body;
 	if(todo && todo._id !== id) {
@@ -40,7 +39,7 @@ router.put('/todos/:id', function(req, res) {
 			return res.status(500).json({err: err.message});
 		}
 		res.json({'todo': todo, message: 'Todo Updated'});
-	})  
+	});  
 });
 
 module.exports = router;
