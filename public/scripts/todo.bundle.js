@@ -37,7 +37,12 @@ webpackJsonp([0],[
 	  };
 
 	  this.deleteTodo = function(todo) {
-	    console.log("I deleted the " + todo.name + " todo!");
+	    if (!todo._id) {
+	      return $q.resolve();
+	    }
+	    return $http.delete('/api/todos/' + todo._id).then(function() {
+	      console.log("I deleted the " + todo.name + " todo!");
+	    });
 	  };
 
 	  this.saveTodos = function(todos) {
@@ -109,7 +114,16 @@ webpackJsonp([0],[
 	'use strict';
 
 
-	function MainCtrl($scope, dataService) {
+	function MainCtrl($scope, $log, $interval, dataService) {
+
+	  // $scope.seconds = 0;
+
+	  // $scope.counter = function() {
+	  //   $scope.seconds++;
+	  //   $log.log($scope.seconds + ' have passed!');
+	  // };
+
+	  // $interval($scope.counter, 1000, 10);
 
 	  dataService.getTodos(function(response) {
 	    var todos = response.data.todos;
@@ -136,8 +150,9 @@ webpackJsonp([0],[
 
 	function TodoCtrl($scope, dataService) {
 	  $scope.deleteTodo = function(todo, index) {
-	    $scope.todos.splice(index, 1);
-	    dataService.deleteTodo(todo);
+	    dataService.deleteTodo(todo).then(function() {
+	      $scope.todos.splice(index, 1);
+	    }); 
 	  };
 
 	  $scope.saveTodos = function() {
