@@ -1,7 +1,7 @@
 'use strict';
 
 
-function MainCtrl($scope, $log, $interval, dataService) {
+function MainCtrl($rootScope, $scope, $log, $interval, dataService) {
 
   // $scope.seconds = 0;
 
